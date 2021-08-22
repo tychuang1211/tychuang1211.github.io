@@ -1,0 +1,38 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+button {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+}
+button:hover {
+  background-color: #4Cc050; /* Green */
+}
+label {
+  font: 1rem 'Fira Sans', sans-serif;
+  color: white;
+  margin: .4rem;
+}
+input {
+  margin: .4rem;
+}
+#p5Div, #threejsDiv {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+#p5Div {
+  z-index: -2;
+}
+#threejsDiv {
+  z-index: -1;
+}

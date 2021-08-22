@@ -1,0 +1,115 @@
+<!DOCTYPE html><html lang="en"><head>
+    <script src="p5.js"></script>
+    <script src="p5.sound.min.js"></script>
+    <script src="iottalkjs-v2.3.1.js"></script>
+    <script src="./util.js" type="text/javascript"></script>
+    <script src="./star.js" type="text/javascript"></script>
+    <script src="./two_pass_blur.js" type="text/javascript"></script>
+    <script src="./circle.js" type="text/javascript"></script>
+    <script src="sketch.js"></script>
+    <script type="module">
+        // Find the latest version by visiting https://cdn.skypack.dev/three.
+        import * as THREE from 'https://cdn.skypack.dev/pin/three@v0.131.3-QQa34rwf1xM5cawaQLl8/mode=imports/optimized/three.js';
+
+        import { FBXLoader } from "https://cdn.skypack.dev/three@v0.131.3/examples/jsm/loaders/FBXLoader.js";
+
+        let camera, scene, renderer;
+
+        const clock = new THREE.Clock();
+
+        let mixer;
+
+        init();
+        animate();
+
+        function init() {
+
+            const container = document.createElement( 'div' );
+            container.setAttribute("id", "threejsDiv");
+            document.body.appendChild( container );
+
+            camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
+            camera.position.set( 10, 125, 400 );
+            //camera.position.set( 0, 6, 20 );
+            scene = new THREE.Scene();
+            //scene.background = new THREE.Color( 0xa0a0a0 );
+            //scene.fog = new THREE.Fog( 0xa0a0a0, 200, 1000 );
+
+            const hemiLight = new THREE.HemisphereLight( 0xffffff, 0x444444 );
+            hemiLight.position.set( 0, 200, 0 );
+            scene.add( hemiLight );
+
+            const dirLight = new THREE.DirectionalLight( 0xffffff );
+            dirLight.position.set( 0, 200, 100 );
+            dirLight.castShadow = true;
+            dirLight.shadow.camera.top = 180;
+            dirLight.shadow.camera.bottom = - 100;
+            dirLight.shadow.camera.left = - 120;
+            dirLight.shadow.camera.right = 120;
+            scene.add( dirLight );
+            /*
+            // ground
+            const mesh = new THREE.Mesh( new THREE.PlaneGeometry( 2000, 2000 ), new THREE.MeshPhongMaterial( { color: 0x999999, depthWrite: false } ) );
+            mesh.rotation.x = - Math.PI / 2;
+            mesh.receiveShadow = true;
+            scene.add( mesh );
+
+            const grid = new THREE.GridHelper( 2000, 20, 0x000000, 0x000000 );
+            grid.material.opacity = 0.2;
+            grid.material.transparent = true;
+            scene.add( grid );
+            */
+            // model
+            const loader = new FBXLoader();
+            loader.load( 'assets/Samba Dancing.fbx', function ( object ) {
+
+                mixer = new THREE.AnimationMixer( object );
+
+                const action = mixer.clipAction( object.animations[ 0 ] );
+                action.play();
+
+                object.traverse( function ( child ) {
+
+                    if ( child.isMesh ) {
+
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+
+                    }
+
+                } );
+
+                scene.add( object );
+
+            } );
+            renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
+            renderer.setClearColor( 0x000000, 0 );
+            renderer.setPixelRatio( window.devicePixelRatio );
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            renderer.shadowMap.enabled = true;
+            container.appendChild( renderer.domElement );
+
+            window.addEventListener( 'resize', onWindowResize );
+        }
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+
+            renderer.setSize( window.innerWidth, window.innerHeight );
+        }
+        function animate() {
+            requestAnimationFrame( animate );
+
+            const delta = clock.getDelta();
+
+            if ( mixer ) mixer.update( delta );
+
+            renderer.render( scene, camera );
+        }
+    </script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <div id="p5Div"></div>
+</body></html>
