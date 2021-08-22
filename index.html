@@ -17,13 +17,58 @@
 
         const clock = new THREE.Clock();
 
-        let mixer;
+        const modelButton = document.getElementById( 'model' );
+        modelButton.addEventListener( 'click', changeModel );
+
+        let mixers = [];
+        let modelIndex = 1;
 
         init();
         animate();
 
-        function init() {
+        function changeModel() {
+            if(modelIndex == 0) {
+                scene.remove(mixers[1].getRoot());
+                scene.add(mixers[0].getRoot());
+                camera.position.set( 10, 125, 400 );
+                modelIndex++;
+            }
+            else if(modelIndex == 1){
+                scene.remove(mixers[0].getRoot());
+                scene.add(mixers[1].getRoot());
+                camera.position.set( 0, 6, 20 );
+                modelIndex++;
+            }
+            else {
+                scene.remove(mixers[0].getRoot());
+                scene.remove(mixers[1].getRoot());
+                modelIndex = 0;
+            }
+        }
 
+        function loadModel(loader, url) {
+            return new Promise(resolve => {
+                loader.load(url, resolve);
+            });
+        }
+
+        function FBXloaded(object) {
+            let index = mixers.push(new THREE.AnimationMixer( object ))-1;
+
+            const action = mixers[index].clipAction( object.animations[ 0 ] );
+            action.play();
+
+            object.traverse( function ( child ) {
+                if ( child.isMesh ) {
+
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+
+                }
+            } );        
+        }
+
+        function init() {
             const container = document.createElement( 'div' );
             container.setAttribute("id", "threejsDiv");
             document.body.appendChild( container );
@@ -61,27 +106,18 @@
             */
             // model
             const loader = new FBXLoader();
-            loader.load( 'assets/Samba Dancing.fbx', function ( object ) {
-
-                mixer = new THREE.AnimationMixer( object );
-
-                const action = mixer.clipAction( object.animations[ 0 ] );
-                action.play();
-
-                object.traverse( function ( child ) {
-
-                    if ( child.isMesh ) {
-
-                        child.castShadow = true;
-                        child.receiveShadow = true;
-
-                    }
-
-                } );
-
-                scene.add( object );
-
-            } );
+            loadModel( loader, 'assets/Samba Dancing.fbx' )
+                .then(result => { 
+                    FBXloaded(result);
+                    scene.add(result); 
+                })
+                .then(()=>{
+                    return loadModel( loader, 'assets/Rumba Dancing.fbx' );
+                })
+                .then(result =>{
+                    FBXloaded(result);
+                });
+          
             renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
             renderer.setClearColor( 0x000000, 0 );
             renderer.setPixelRatio( window.devicePixelRatio );
@@ -102,7 +138,8 @@
 
             const delta = clock.getDelta();
 
-            if ( mixer ) mixer.update( delta );
+            for(let i = 0; i < mixers.length; i++) { mixers[i].update( delta ); }
+            //if ( mixer ) mixer.update( delta );
 
             renderer.render( scene, camera );
         }
@@ -112,4 +149,7 @@
   </head>
   <body>
     <div id="p5Div"></div>
-</body></html>
+    <button class="green" id="play">Play</button><button 
+        class="blue" id="model">Change Model</button>
+  </body>
+</html>

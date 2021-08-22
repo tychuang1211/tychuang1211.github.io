@@ -29,6 +29,7 @@ let waveformVisualizer;
 // GUI
 let playButton;
 let blurButton;
+let modelButton;
 let volumeSlider;
 
 function preload() {
@@ -69,7 +70,7 @@ function setup() {
   peakDetect = new p5.PeakDetect();
   peakDetect.onPeak(changeColor);
   // GUI
-  playButton = createButton('Play');
+  playButton = select('#play');
   playButton.mousePressed(tooglePlay);
   let div = createDiv();
   let label = createElement('label', 'Volume');
