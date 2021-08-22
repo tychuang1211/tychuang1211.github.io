@@ -17,32 +17,39 @@
 
         const clock = new THREE.Clock();
 
-        const modelButton = document.getElementById( 'model' );
-        modelButton.addEventListener( 'click', changeModel );
-
         let mixers = [];
-        let modelIndex = 1;
+        let modelIndex = 0;
+        let isModelVisible = true;
 
         init();
         animate();
 
-        function changeModel() {
-            if(modelIndex == 0) {
-                scene.remove(mixers[1].getRoot());
-                scene.add(mixers[0].getRoot());
-                camera.position.set( 10, 125, 400 );
-                modelIndex++;
-            }
-            else if(modelIndex == 1){
+        function toogleModel() {
+            if(isModelVisible) {
                 scene.remove(mixers[0].getRoot());
-                scene.add(mixers[1].getRoot());
-                camera.position.set( 0, 6, 20 );
-                modelIndex++;
+                scene.remove(mixers[1].getRoot());
+                isModelVisible = false;
             }
             else {
-                scene.remove(mixers[0].getRoot());
-                scene.remove(mixers[1].getRoot());
-                modelIndex = 0;
+                scene.add(mixers[modelIndex].getRoot());
+                isModelVisible = true;
+            }
+        }
+
+        function changeModel() {
+            if(isModelVisible) {
+                if(modelIndex == 0) {
+                    scene.remove(mixers[0].getRoot());
+                    scene.add(mixers[1].getRoot());
+                    camera.position.set( 0, 6, 20 );
+                    modelIndex++;
+                }
+                else if(modelIndex == 1){
+                    scene.remove(mixers[1].getRoot());
+                    scene.add(mixers[0].getRoot());
+                    camera.position.set( 10, 125, 400 );
+                    modelIndex = 0;
+                }
             }
         }
 
@@ -116,6 +123,11 @@
                 })
                 .then(result =>{
                     FBXloaded(result);
+                }).finally(()=>{
+                    const modelButton = document.getElementById( 'model' );
+                    modelButton.addEventListener( 'click', changeModel );
+                    const toogleButton = document.getElementById( 'toogle' );
+                    toogleButton.addEventListener( 'click', toogleModel );
                 });
           
             renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
@@ -150,6 +162,7 @@
   <body>
     <div id="p5Div"></div>
     <button class="green" id="play">Play</button><button 
-        class="blue" id="model">Change Model</button>
+        class="blue" id="model">Change Model</button><button 
+        class="black" id="toogle">Show/Hide Model</button>
   </body>
 </html>

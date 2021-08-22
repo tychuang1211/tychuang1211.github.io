@@ -5,11 +5,19 @@ html, body {
 }
 .green {
   color: white;
-  background-color: #4CAF50; /* Green */
+  background-color: #4CAF50;
 }
 .blue {
   color: white;
-  background-color: #008CBA; /* Green */
+  background-color: #008CBA; 
+}
+.yellow {
+  color: black;
+  background-color: #ffc107
+}
+.black {
+  color: white;
+  background-color: #565656;
 }
 button {
   border: 1px solid whitesmoke;
@@ -21,10 +29,16 @@ button {
   cursor: pointer;
 }
 button, .green:hover {
-  background-color: #4Cc050; /* Green */
+  background-color: #4Cc050;
 }
 button, .blue:hover {
-  background-color: #009DBA; /* Green */
+  background-color: #009DBA;
+}
+button, .yellow:hover {
+  background-color: #fff207;
+}
+button, .black:hover {
+  background-color: #566756;
 }
 label {
   font: 1rem 'Fira Sans', sans-serif;
