@@ -153,7 +153,7 @@ function draw() {
 }
 
 function windowResized() {
-  CANVAS.resizeCanvas(windowWidth, windowHeight);
+  resizeCanvas(windowWidth, windowHeight);
   starLayer.resizeCanvas(windowWidth, windowHeight);
   circleLayer.resizeCanvas(windowWidth, windowHeight);
 }
