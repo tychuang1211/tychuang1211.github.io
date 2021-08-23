@@ -20,6 +20,10 @@ html, body {
   color: white;
   background-color: #565656;
 }
+.red {
+  color: white;
+  background-color: #f44336;
+}
 button {
   border: 1px solid whitesmoke;
   padding: 15px 32px;
@@ -40,6 +44,9 @@ button, .yellow:hover {
 }
 button, .black:hover {
   background-color: #566756;
+}
+button, .red:hover {
+  background-color: #f45436;
 }
 label {
   font: 1rem 'Fira Sans', sans-serif;

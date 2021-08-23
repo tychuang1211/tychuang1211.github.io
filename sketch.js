@@ -32,6 +32,8 @@ let playButton;
 let blurButton;
 let modelButton;
 let volumeSlider;
+let audioStatHidden;
+const audioStat = document.querySelector('#audioStat');
 
 function preload() {
   // load the shader definitions from files
@@ -41,6 +43,13 @@ function preload() {
   // load audio
   //song = loadSound('./audio/Peter_Gresser_Skipping_in_the_No_Standing_Zone.mp3');
   song = loadSound('./audio/Siddhartha_Corsus_Singular_Vision.mp3');
+  song.onended(()=>{
+    playButton.html('Play');
+    playButton.removeClass('red');
+    playButton.addClass('green');
+    audioStatHidden.value(song.isPlaying());
+    audioStat.dispatchEvent(new Event('change'));
+  })
 }
 
 function setup() {
@@ -82,6 +91,9 @@ function setup() {
   volumeSlider.parent(div);
   //blurButton = createButton('Blur');
   //blurButton.mousePressed(applyBlur);
+  audioStatHidden = select('#audioStat');
+  audioStatHidden.value(song.isPlaying());
+  audioStat.dispatchEvent(new Event('change'));
 }
 
 function applyBlur() {
@@ -167,12 +179,18 @@ function mouseClicked() {
 function tooglePlay() {
   if(!song.isPlaying()) {
     song.play();
-    //playButton.html('Pause');
+    playButton.html('Pause');
+    playButton.removeClass('green');
+    playButton.addClass('red');
   }
   else {
     song.pause();
-    //playButton.html('Play');
+    playButton.html('Play');
+    playButton.removeClass('red');
+    playButton.addClass('green');
   }
+  audioStatHidden.value(song.isPlaying());
+  audioStat.dispatchEvent(new Event('change'));
 }
 
 function onSetDetected() {
