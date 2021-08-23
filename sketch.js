@@ -69,7 +69,7 @@ function setup() {
   // Audio Analyze
   fft = new p5.FFT(smoothing, bins);
   peakDetect = new p5.PeakDetect(threshold=0.25);
-  peakDetect.onPeak(changeColor);
+  peakDetect.onPeak(onSetDetected);
   // GUI
   playButton = select('#play');
   playButton.mousePressed(tooglePlay);
@@ -100,7 +100,6 @@ function frequncyRange(freq) {
 
 function draw() {
   if(frameCnt > 23) frameCnt = 0;
-
   // Audio Analyze
   let waveform = fft.waveform();
   fft.analyze();
@@ -113,7 +112,10 @@ function draw() {
     console.log(spectralCentroid);
   }*/
   peakDetect.update(fft);
-  
+  if(recv_data.onset == 'true') { 
+    changeColor();
+    send_data.onset = 'false';
+  }
   // GUI settings
   let val = volumeSlider.value();
   song.setVolume(val/100);
@@ -151,7 +153,7 @@ function draw() {
 }
 
 function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
+  CANVAS.resizeCanvas(windowWidth, windowHeight);
   starLayer.resizeCanvas(windowWidth, windowHeight);
   circleLayer.resizeCanvas(windowWidth, windowHeight);
 }
@@ -171,6 +173,11 @@ function tooglePlay() {
     song.pause();
     //playButton.html('Play');
   }
+}
+
+function onSetDetected() {
+  send_data.onset = 'true';
+  //changeColor();
 }
 
 function changeColor(_colorMode = -1) {

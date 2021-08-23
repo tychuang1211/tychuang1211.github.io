@@ -23,6 +23,11 @@
         let modelIndex = 0;
         let isModelVisible = true;
 
+        let animationActions = [];
+        let activeIndex = 0;
+        let activeAction;
+        let lastAction;
+
         init();
         animate();
 
@@ -65,7 +70,8 @@
             let index = mixers.push(new THREE.AnimationMixer( object ))-1;
 
             const action = mixers[index].clipAction( object.animations[ 0 ] );
-            action.play();
+            animationActions.push(action);
+            //action.play();
 
             object.traverse( function ( child ) {
                 if ( child.isMesh ) {
@@ -75,6 +81,31 @@
 
                 }
             } );        
+        }
+
+        function nextAction() {
+            if(modelIndex == 0) {
+                if(activeIndex < 1) {
+                    activeIndex += 1;
+                    setAction(animationActions[activeIndex]);
+                }
+                else { 
+                    activeIndex = 0; 
+                    setAction(animationActions[activeIndex]);
+                }
+            }
+        }
+
+        function setAction(toAction) {
+            if (toAction != activeAction) {
+                lastAction = activeAction
+                activeAction = toAction
+                //lastAction.stop()
+                lastAction.fadeOut(1)
+                activeAction.reset()
+                activeAction.fadeIn(1)
+                activeAction.play()
+            }
         }
 
         function init() {
@@ -115,21 +146,35 @@
             */
             // model
             const loader = new FBXLoader();
-            loadModel( loader, 'assets/Samba Dancing.fbx' )
+            loadModel( loader, 'assets/Idle.fbx' )
                 .then(result => { 
                     FBXloaded(result);
                     scene.add(result); 
+                })
+                .then(()=>{
+                    return loadModel( loader, 'assets/Samba Dancing.fbx' );
+                })
+                .then(result =>{
+                    const action = mixers[0].clipAction( result.animations[ 0 ] );
+                    animationActions.push(action);
                 })
                 .then(()=>{
                     return loadModel( loader, 'assets/Rumba Dancing.fbx' );
                 })
                 .then(result =>{
                     FBXloaded(result);
-                }).finally(()=>{
+                })
+                .finally(()=>{
+                    activeAction = animationActions[0];
+                    activeAction.play();
+                    animationActions[2].play();
                     const modelButton = document.getElementById( 'model' );
                     modelButton.addEventListener( 'click', changeModel );
                     const toogleButton = document.getElementById( 'toogle' );
                     toogleButton.addEventListener( 'click', toogleModel );
+                    const playButton = document.getElementById( 'play' );
+                    playButton.addEventListener( 'click', nextAction );
+                    console.log(animationActions);
                 });
           
             renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
@@ -164,11 +209,14 @@
   <body>
     <div id="p5Div"></div>
     <button class="green" id="play">Play</button><button 
-        class="blue" id="model">Change Model</button><button 
+        class="blue" id="model">Change Model</button><button
         class="black" id="toogle">Show/Hide Model</button>
     <div id="control"></div>
-    <div><label for="idf">Amplitutde:
-        <input readonly type="text" id="idf" value="0"/>
+    <div><label for="amp">Amplitutde:
+        <input readonly type="text" id="amp" value="0"/>
+    </label></div>
+    <div><label for="onset">Onset:
+        <input readonly type="text" id="onset" value="false"/>
     </label></div>
     <div><label for="odf">DummyControl_O:
         <input readonly type="text" id="odf" value="0"/>
