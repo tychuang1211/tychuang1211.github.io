@@ -1,4 +1,5 @@
 let CANVAS;
+let frameCnt = 0;
 // Blur Shader
 let blurShader;
 let isBlur = false;
@@ -67,18 +68,18 @@ function setup() {
   waveformVisualizer = new Circle(new Array(bins).fill(0), 1);
   // Audio Analyze
   fft = new p5.FFT(smoothing, bins);
-  peakDetect = new p5.PeakDetect();
+  peakDetect = new p5.PeakDetect(threshold=0.25);
   peakDetect.onPeak(changeColor);
   // GUI
   playButton = select('#play');
   playButton.mousePressed(tooglePlay);
-  let div = createDiv();
+  let div = select('#control');
   let label = createElement('label', 'Volume');
   label.attribute('for', 'volume')
   volumeSlider = createSlider(0, 100, 70);
   volumeSlider.id('volume');
-  div.child(label);
-  div.child(volumeSlider);
+  label.parent(div);
+  volumeSlider.parent(div);
   //blurButton = createButton('Blur');
   //blurButton.mousePressed(applyBlur);
 }
@@ -88,11 +89,29 @@ function applyBlur() {
   else isBlur = true;
 }
 
+function frequncyRange(freq) {
+  if (freq >= 20 && freq < 140) { return 0; }
+  else if (freq >= 140 && freq < 400) { return 1; }
+  else if (freq >= 400 && freq < 2600) { return 2; }
+  else if (freq >= 2600 && freq < 5200) { return 3; }
+  else if (freq >= 5200 && freq < 14000) { return 4; }
+  else { return 5; }
+}
+
 function draw() {
+  if(frameCnt > 23) frameCnt = 0;
+
   // Audio Analyze
   let waveform = fft.waveform();
   fft.analyze();
   let amp = fft.getEnergy(20, 220);
+  send_data.amplitude = amp;
+  amp = recv_data.amplitude;
+  let spectralCentroid = fft.getCentroid();
+  /*if(frameCnt == 0) {
+    changeColor(frequncyRange(spectralCentroid));
+    console.log(spectralCentroid);
+  }*/
   peakDetect.update(fft);
   
   // GUI settings
@@ -127,6 +146,8 @@ function draw() {
   waveformVisualizer.display(circleLayer, map(amp, 0, 255, 50, 150));
   //displayCircle(circleLayer, waveform);
   image(circleLayer, 0, 0);
+
+  frameCnt++;
 }
 
 function windowResized() {
@@ -136,9 +157,9 @@ function windowResized() {
 }
 
 function mouseClicked() {
-  /*if (isInCanvas(mouseX, mouseY)) {
+  if (isInCanvas(mouseX, mouseY)) {
     changeColor();
-  }*/
+  }
 }
 
 function tooglePlay() {
@@ -152,8 +173,9 @@ function tooglePlay() {
   }
 }
 
-function changeColor() {
-  if (colorMode == colorMap.length-1) {
+function changeColor(_colorMode = -1) {
+  if(Number.isInteger(_colorMode) && _colorMode >= 0) { colorMode = _colorMode; }
+  if (colorMode >= colorMap.length-1) {
       colorMode = 0;
   }
   else {

@@ -1,11 +1,12 @@
 <!DOCTYPE html><html lang="en"><head>
-    <script src="p5.js"></script>
-    <script src="p5.sound.min.js"></script>
-    <script src="iottalkjs-v2.3.1.js"></script>
-    <script src="./util.js" type="text/javascript"></script>
-    <script src="./star.js" type="text/javascript"></script>
-    <script src="./two_pass_blur.js" type="text/javascript"></script>
-    <script src="./circle.js" type="text/javascript"></script>
+    <script src="p5.js" type="text/javascript"></script>
+    <script src="p5.sound.min.js" type="text/javascript"></script>
+    <script src="iottalkjs-v2.3.1.js" type="text/javascript"></script>
+    <script defer src="device.js" type="text/javascript"></script>
+    <script src="util.js" type="text/javascript"></script>
+    <script src="star.js" type="text/javascript"></script>
+    <script src="two_pass_blur.js" type="text/javascript"></script>
+    <script src="circle.js" type="text/javascript"></script>
     <script src="sketch.js"></script>
     <script type="module">
         // Find the latest version by visiting https://cdn.skypack.dev/three.
@@ -164,5 +165,12 @@
     <button class="green" id="play">Play</button><button 
         class="blue" id="model">Change Model</button><button 
         class="black" id="toogle">Show/Hide Model</button>
+    <div id="control"></div>
+    <div><label for="idf">Amplitutde:
+        <input readonly type="text" id="idf" value="0"/>
+    </label></div>
+    <div><label for="odf">DummyControl_O:
+        <input readonly type="text" id="odf" value="0"/>
+    </label></div>
   </body>
 </html>

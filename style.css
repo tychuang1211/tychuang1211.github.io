@@ -2,6 +2,7 @@ html, body {
   margin: 0;
   padding: 0;
   overflow: hidden;
+  color: white;
 }
 .green {
   color: white;
@@ -46,7 +47,11 @@ label {
   margin: .4rem;
 }
 input {
-  margin: .4rem;
+    margin: .4rem;
+    background-color: transparent;
+    border: none;
+    color: white;
+    font-size: 1rem;
 }
 #p5Div, #threejsDiv {
   position: absolute;
