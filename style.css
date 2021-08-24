@@ -4,6 +4,9 @@ html, body {
   overflow: hidden;
   color: white;
 }
+h3 {
+  margin-left: 1rem;
+}
 .green {
   color: white;
   background-color: #4CAF50;
@@ -51,7 +54,8 @@ button, .red:hover {
 label {
   font: 1rem 'Fira Sans', sans-serif;
   color: white;
-  margin: .4rem;
+  margin-left: 1.5rem;
+  margin-top: .4rem;
 }
 input {
     margin: .4rem;
