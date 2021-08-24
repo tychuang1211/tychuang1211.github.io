@@ -3,11 +3,11 @@
     <script src="p5.js" type="text/javascript"></script>
     <script src="p5.sound.min.js" type="text/javascript"></script>
     <script src="iottalkjs-v2.3.1.js" type="text/javascript"></script>
-    <script defer src="device.js" type="text/javascript"></script>
     <script src="util.js" type="text/javascript"></script>
     <script src="star.js" type="text/javascript"></script>
     <script src="two_pass_blur.js" type="text/javascript"></script>
     <script src="circle.js" type="text/javascript"></script>
+    <script defer src="device.js" type="text/javascript"></script>
     <script defer src="sketch.js"></script>
     <script type="module">
         // Find the latest version by visiting https://cdn.skypack.dev/three.
@@ -213,14 +213,26 @@
         class="blue" id="model">Change Model</button><button
         class="black" id="toogle">Show/Hide Model</button>
     <div id="control"></div>
-    <div><label for="amp">Amplitutde:
+    <div><label for="amp">Amplitutde_I:
         <input readonly type="text" id="amp" value="0"/>
     </label></div>
-    <div><label for="onset">Onset:
+    <div><label for="onset">Onset_I:
         <input readonly type="text" id="onset" value="false"/>
     </label></div>
-    <div><label for="odf">DummyControl_O:
-        <input readonly type="text" id="odf" value="0"/>
+    <div><label for="beat">Beat_I:
+        <input readonly type="text" id="beat" value="false"/>
+    </label></div>
+    <div><label for="type">Type_I:
+        <input readonly type="text" id="type" value="-1"/>
+    </label></div>
+    <div><label for="speed">Speed_O:
+        <input readonly type="text" id="speed" value="5"/>
+    </label></div>
+    <div><label for="radius">Radius_O:
+        <input readonly type="text" id="radius" value="5"/>
+    </label></div>
+    <div><label for="color">Color_O:
+        <input readonly type="text" id="color" value="5"/>
     </label></div>
     <input id="audioStat" name="audioStat" type="hidden" value="">
   </body>

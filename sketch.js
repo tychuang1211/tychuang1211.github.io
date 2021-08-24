@@ -12,7 +12,7 @@ let peakDetect;
 // Stars
 let starLayer;
 let starNum = 30;
-let starSpeed = 10;
+let starSpeed = 5;
 let stars = [];
 // Color
 let colorMap = [[  0,128,255],  // BLUE
@@ -35,14 +35,27 @@ let volumeSlider;
 let audioStatHidden;
 const audioStat = document.querySelector('#audioStat');
 
+function setOnset() {
+  send_data.onset = 'true';
+}
+
+function setBeat() {
+  send_data.beat = 'true';
+}
+
+function setType(_type) {
+  send_data.type = _type;
+}
+
 function preload() {
   // load the shader definitions from files
   let blurH = loadShader('./assets/base.vert', './assets/blur.frag');
   let blurV = loadShader('./assets/base.vert', './assets/blur.frag');
   blurShader = new TwoPassBlur(blurH, blurV);
   // load audio
+  let songname = 'Siddhartha_Corsus_Singular_Vision'
   //song = loadSound('./audio/Peter_Gresser_Skipping_in_the_No_Standing_Zone.mp3');
-  song = loadSound('./audio/Siddhartha_Corsus_Singular_Vision.mp3');
+  song = loadSound('./audio/'+songname+'.mp3');
   song.onended(()=>{
     playButton.html('Play');
     playButton.removeClass('red');
@@ -50,6 +63,30 @@ function preload() {
     audioStatHidden.value(song.isPlaying());
     audioStat.dispatchEvent(new Event('change'));
   })
+  // load JSON data; then proceed
+  getJSON('./json/'+songname+'.json').then(data => {
+      // assign with data
+      console.log(data);
+      let dataNum = data["onset"].length;
+      for (let i = 0; i < dataNum; i++) {
+        //console.log(data["onset"][i]/45);
+        song.addCue(data["onset"][i]/45, setOnset);
+      }
+      dataNum = data["beat"].length;
+      for (let i = 0; i < dataNum; i++) {
+        //console.log(data["beat"][i]/45);
+        song.addCue(data["beat"][i]/45, setBeat);
+      }
+      let classNum = data["type"].length;
+      console.log(data["type"].length);
+      for(let i = 0; i < classNum; i++){
+        let dataNum = data["type"][i].length;
+        for (let j = 0; j < dataNum; j++) {
+          //console.log(data["type"][i][j]);
+          song.addCue(data["type"][i][j], setType, i);
+        }
+      }
+  });
 }
 
 function setup() {
@@ -101,15 +138,6 @@ function applyBlur() {
   else isBlur = true;
 }
 
-function frequncyRange(freq) {
-  if (freq >= 20 && freq < 140) { return 0; }
-  else if (freq >= 140 && freq < 400) { return 1; }
-  else if (freq >= 400 && freq < 2600) { return 2; }
-  else if (freq >= 2600 && freq < 5200) { return 3; }
-  else if (freq >= 5200 && freq < 14000) { return 4; }
-  else { return 5; }
-}
-
 function draw() {
   if(frameCnt > 23) frameCnt = 0;
   // Audio Analyze
@@ -118,15 +146,11 @@ function draw() {
   let amp = fft.getEnergy(20, 220);
   send_data.amplitude = amp;
   amp = recv_data.amplitude;
-  let spectralCentroid = fft.getCentroid();
-  /*if(frameCnt == 0) {
-    changeColor(frequncyRange(spectralCentroid));
-    console.log(spectralCentroid);
-  }*/
-  peakDetect.update(fft);
-  if(recv_data.onset == 'true') { 
+
+  //peakDetect.update(fft);
+  if(recv_data.changecolor == 'true') { 
     changeColor();
-    send_data.onset = 'false';
+    //send_data.onset = 'false';
   }
   // GUI settings
   let val = volumeSlider.value();
@@ -141,11 +165,12 @@ function draw() {
   // Update starLayer
   starLayer.clear();
   for (let i = 0; i < stars.length; i++) {
-    if(amp > 200)  { stars[i].update(80); }
+    stars[i].update(recv_data.speed);
+    /*if(amp > 200)  { stars[i].update(80); }
     else if(amp > 150) { stars[i].update(40); }
     else if(amp > 100) { stars[i].update(20); }
     else if(amp > 50) { stars[i].update(10); }
-    else { stars[i].update(5); }
+    else { stars[i].update(5); }*/
     stars[i].display(starLayer);
   }
   image(starLayer, 0, 0);
@@ -171,9 +196,9 @@ function windowResized() {
 }
 
 function mouseClicked() {
-  if (isInCanvas(mouseX, mouseY)) {
+  /*if (isInCanvas(mouseX, mouseY)) {
     changeColor();
-  }
+  }*/
 }
 
 function tooglePlay() {
@@ -194,8 +219,7 @@ function tooglePlay() {
 }
 
 function onSetDetected() {
-  send_data.onset = 'true';
-  //changeColor();
+  setOnset();
 }
 
 function changeColor(_colorMode = -1) {
