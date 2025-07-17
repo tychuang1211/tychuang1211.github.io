@@ -196,9 +196,9 @@ function windowResized() {
 }
 
 function mouseClicked() {
-  /*if (isInCanvas(mouseX, mouseY)) {
+  if (isInCanvas(mouseX, mouseY)) {
     changeColor();
-  }*/
+  }
 }
 
 function tooglePlay() {
